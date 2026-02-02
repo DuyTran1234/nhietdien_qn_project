@@ -1,0 +1,20 @@
+meta {
+  name: Delete by id Hợp đồng thuê đất
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{backend_url}}/hop-dong-thue-dat/delete-by-id/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 6
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

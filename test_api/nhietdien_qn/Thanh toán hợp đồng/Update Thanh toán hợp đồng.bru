@@ -1,0 +1,24 @@
+meta {
+  name: Update Thanh toán hợp đồng
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{backend_url}}/thanh-toan-hop-dong/update
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": 3,
+    "ky": 2,
+    "ngayThanhToan": "2026-07-01"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

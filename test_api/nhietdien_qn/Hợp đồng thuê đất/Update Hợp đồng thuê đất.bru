@@ -1,0 +1,23 @@
+meta {
+  name: Update Hợp đồng thuê đất
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{backend_url}}/hop-dong-thue-dat/update
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": 3,
+    "soNamThue": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

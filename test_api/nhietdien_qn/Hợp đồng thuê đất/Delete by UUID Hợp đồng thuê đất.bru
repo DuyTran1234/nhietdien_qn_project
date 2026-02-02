@@ -1,0 +1,20 @@
+meta {
+  name: Delete by UUID Hợp đồng thuê đất
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{backend_url}}/hop-dong-thue-dat/delete-by-uuid/:uuid
+  body: none
+  auth: inherit
+}
+
+params:path {
+  uuid: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

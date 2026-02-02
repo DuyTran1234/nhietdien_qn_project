@@ -1,0 +1,16 @@
+meta {
+  name: Get Thuế Suất Đất
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{backend_url}}/thue-suat-dat/get/2
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

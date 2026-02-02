@@ -1,0 +1,21 @@
+meta {
+  name: Get Pagination Thuế suất đất
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{backend_url}}/thue-suat-dat/get-pagination?limit=2&page=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 2
+  page: 0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

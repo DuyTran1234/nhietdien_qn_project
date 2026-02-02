@@ -1,0 +1,45 @@
+services:
+  psql_db:
+    image: postgres:15-alpine
+    container_name: nhietdien_posgres15_alpine
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: kid1412
+      POSTGRES_DB: nhietdien_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - nhietdien_project_docker:/var/lib/posgresql/data
+    # networks:
+    #   - nhietdien-network
+#   nhietdien-backend:
+#     build: ./backend
+#     container_name: nestjs_nhietdien
+#     restart: always
+#     depends_on:
+#       - psql_db
+#     env_file:
+#       - ./backend/.env
+#     ports:
+#       - "3000:3000"
+#     networks:
+#       - nhietdien-network
+#   nginx:
+#     image: nginx:alpine
+#     container_name: nginx_proxy_nhietdien
+#     restart: always
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+#     depends_on:
+#       - nhietdien-backend
+#     networks:
+#       - nhietdien-network
+# networks:
+#   nhietdien-network:
+#     driver: bridge
+
+volumes:
+  nhietdien_project_docker:

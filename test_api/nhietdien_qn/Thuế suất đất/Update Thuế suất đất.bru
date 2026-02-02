@@ -1,0 +1,23 @@
+meta {
+  name: Update Thuế suất đất
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{backend_url}}/thue-suat-dat/update
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": 1,
+    "tenThueSuat": "Thuế suất đất phi nông nghiệp năm 2025"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,26 @@
+meta {
+  name: Get Hợp đồng thuê đất
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{backend_url}}/hop-dong-thue-dat/get/:uuid
+  body: json
+  auth: inherit
+}
+
+params:path {
+  uuid: 019bdf76-32f1-75c8-b286-790bc4bfa414
+}
+
+body:json {
+  {
+      "apDungDonGiaDate": "desc"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

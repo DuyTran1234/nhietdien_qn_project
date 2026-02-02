@@ -1,0 +1,24 @@
+meta {
+  name: Create Thuế Suất Đất
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{backend_url}}/thue-suat-dat/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tenThueSuat": "Thuế suất đất phi nông nghiệp năm 2019",
+    "tax": 0.02,
+    "isActive": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

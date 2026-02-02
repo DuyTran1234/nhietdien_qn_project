@@ -1,0 +1,26 @@
+meta {
+  name: Create Thanh Toán Hợp Đồng
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{backend_url}}/thanh-toan-hop-dong/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "hopDongUUID": "019bdf76-32f1-75c8-b286-790bc4bfa414",
+      "ngayThanhToan": "2026-01-30",
+      "ky": 1,
+      "tienThanhToan": 2000000,
+      "loaiNop": 0
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
