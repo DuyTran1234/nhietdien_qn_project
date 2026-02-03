@@ -7,6 +7,8 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PWD}
       POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
     volumes:
       - nhietdien_project_data:/var/lib/postgresql/data
       - ./nhietdien.sql:/docker-entrypoint-initdb.d/nhietdien.sql
