@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from "@nestjs/common";
 import { HopDongThueDatService } from "../service/hop-dong-thue-dat.service";
 import { CreateHopDongThueDatDto } from "../dto/create-hop-dong-thue-dat.dto";
-import { SortHopDongThueDatDto } from "../dto/order-hop-dong-thue-dat.dto";
 import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
 import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
 import { HopDongThueDatDtoResponse } from "../dto/response/hop-dong-thue-dat.dto.response";
@@ -13,23 +12,27 @@ export class HopDongThueDatController {
     ) { }
 
     @Post('create')
-    async createHopDongThueDat(@Body() createDto: CreateHopDongThueDatDto): Promise<HopDongThueDatEntity> {
+    async createHopDongThueDat(
+        @Body() createDto: CreateHopDongThueDatDto
+    ): Promise<HopDongThueDatEntity> {
         return await this.hopDongService.createHopDongThueDat(createDto);
     }
 
     @Get('get/:uuid')
     async getHopDongThueDat(
-        @Param('uuid') uuid: string, @Body() orderDTO: SortHopDongThueDatDto,
+        @Param('uuid') uuid: string, @Body() sortDto: any,
     ): Promise<HopDongThueDatEntity[]> {
-        return await this.hopDongService.getHopDongThueDat(uuid, orderDTO);
+        return await this.hopDongService.getHopDongThueDat(uuid, sortDto);
     }
 
     @Get('get-pagination')
     async getPaginationHopDongThueDat(
         @Query('limit', ParseIntPipe) limit: number, @Query('page', ParseIntPipe) page: number,
-        @Query('findHD') findHD: string, @Body() sortDto: SortHopDongThueDatDto
-    ): Promise<[HopDongThueDatDtoResponse[], number]> {
-        return await this.hopDongService.getPaginationHopDongThueDat(sortDto, limit, page, findHD);
+        @Query('findHD') findHD: string, @Body() sortDto: any
+    ): Promise<{ list: HopDongThueDatDtoResponse[], total: number }> {
+        const [list, total] =
+            await this.hopDongService.getPaginationHopDongThueDat(sortDto, limit, page, findHD);
+        return { list, total };
     }
 
     @Patch('update')

@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import dayjs from "dayjs";
-import { DeleteResult, ILike, In, MoreThan, Repository, UpdateResult } from "typeorm";
+import { DeleteResult, ILike, In, MoreThanOrEqual, Repository, UpdateResult } from "typeorm";
 import { Transactional } from "typeorm-transactional";
 import { CreateHopDongThueDatDto } from "../dto/create-hop-dong-thue-dat.dto";
-import { SortHopDongThueDatDto } from "../dto/order-hop-dong-thue-dat.dto";
 import { HopDongThueDatDtoResponse } from "../dto/response/hop-dong-thue-dat.dto.response";
 import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
 import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
@@ -18,16 +17,23 @@ export class HopDongThueDatService {
     ) { }
 
     @Transactional()
-    async createHopDongThueDat(hopDongThueDatDto: CreateHopDongThueDatDto): Promise<HopDongThueDatEntity> {
+    async createHopDongThueDat(
+        hopDongThueDatDto: CreateHopDongThueDatDto,
+    ): Promise<HopDongThueDatEntity> {
         const updateHD = await this.hopDongThueDat.update({
             hopDongUUID: hopDongThueDatDto.hopDongUUID,
         }, { isActive: false, isNewest: false });
-        const create = this.hopDongThueDat.create({ ...hopDongThueDatDto, isActive: true, isNewest: true });
-        return await this.hopDongThueDat.save(create);
+        const createHD = this.hopDongThueDat.create({ ...hopDongThueDatDto, isActive: true, isNewest: true });
+        const hopDong = await this.hopDongThueDat.save(createHD);
+        const preload = await this.hopDongThueDat.preload(hopDong);
+        if (!preload) {
+            throw new BadRequestException('create hop dong thue dat fail');
+        }
+        return preload;
     }
 
     async getHopDongThueDat(
-        hopDongUUID: string, orderDto: SortHopDongThueDatDto
+        hopDongUUID: string, orderDto?: any
     ): Promise<HopDongThueDatEntity[]> {
         const listHopDong = await this.hopDongThueDat.find({
             where: {
@@ -36,19 +42,19 @@ export class HopDongThueDatService {
             relations: {
                 thueSuat: true,
             },
-            order: orderDto as any,
+            order: orderDto,
         });
         return listHopDong;
     }
 
-    async getPaginationHopDongThueDat(
-        sortDto?: SortHopDongThueDatDto, limit?: number, page?: number, findHD?: string | undefined
-    ): Promise<[HopDongThueDatDtoResponse[], number]> {
+    async getHopDongThueDatWithOlder(
+        sortDto?: any, limit?: number, page?: number, findHD?: string | undefined
+    ): Promise<[Map<string, HopDongThueDatEntity[]>, number]> {
         const map = new Map<string, HopDongThueDatEntity[]>();
-        const now = dayjs().format('YYYY-MM-DD');
+        const startYear = `${dayjs().year()}-01-01`;
         const [listHopDongNewest, total] = await this.hopDongThueDat.findAndCount({
             where: {
-                endDate: MoreThan(now),
+                endDate: MoreThanOrEqual(startYear),
                 isNewest: true,
                 isActive: true,
                 soHopDong: findHD ? ILike(`%${findHD}%`) : undefined,
@@ -58,7 +64,7 @@ export class HopDongThueDatService {
             },
             take: limit,
             skip: limit && page ? limit * page : undefined,
-            order: sortDto as any,
+            order: sortDto,
         });
         const listHopDongUUID = new Array<string>();
         for (const hopDong of listHopDongNewest) {
@@ -80,6 +86,13 @@ export class HopDongThueDatService {
         for (const hopdong of listHopDongOlder) {
             map.get(hopdong.hopDongUUID)?.push(hopdong);
         }
+        return [map, total];
+    }
+
+    async getPaginationHopDongThueDat(
+        sortDto?: any, limit?: number, page?: number, findHD?: string | undefined
+    ): Promise<[HopDongThueDatDtoResponse[], number]> {
+        const [map, total] = await this.getHopDongThueDatWithOlder(sortDto, limit, page, findHD);
         const listResult = new Array<HopDongThueDatDtoResponse>();
         for (const listHD of map.values()) {
             const chiTietCacKy =

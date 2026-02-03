@@ -17,7 +17,7 @@ export class ThanhToanHopDongService {
     }
 
     async getThanhToanHopDongByHopDongUUID(
-        hopDongUUID: string, year: number, sortDto: any
+        hopDongUUID: string, year: number, sortDto?: any
     ): Promise<ThanhToanHopDongEntity[]> {
         const startDate = `${year}-01-01`;
         const endDate = `${year}-12-31`;
