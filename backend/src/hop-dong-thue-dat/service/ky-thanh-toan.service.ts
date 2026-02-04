@@ -32,7 +32,7 @@ export class KyThanhToanService {
         }
         if (!older && dateNewest.year() === now.year()) {
             // Thời điểm mới ký hợp đồng đầu tiên
-            const monthUseSkipped = dateNewest.month() - (dateNewest.day() >= 15 ? 0 : 1);
+            const monthUseSkipped = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
             const monthUsed = 12 - monthUseSkipped;
             if (this.isTruoc30Thang4(dateNewest)) {
                 const totalYear = Math.round((newest.dienTich * newest.donGiaThue * monthUsed) / 12);
@@ -52,7 +52,7 @@ export class KyThanhToanService {
         }
         else if (!older || dateNewest.year() < now.year()) {
             const totalMonthUsed = now.year() === hopDongEndDate.year() ?
-                hopDongEndDate.month() - (hopDongEndDate.day() >= 15 ? 0 : 1) : 12;
+                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
             const totalYear = Math.round((newest.dienTich * newest.donGiaThue * totalMonthUsed) / 12);
             const tienKy = Math.round(totalYear / 2);
             return [
@@ -61,10 +61,10 @@ export class KyThanhToanService {
             ];
         } else {
             const totalMonthUsed = now.year() === hopDongEndDate.year() ?
-                hopDongEndDate.month() - (hopDongEndDate.day() >= 15 ? 0 : 1) : 12;
+                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
             if (this.isTruoc30Thang4(dateNewest)) {
                 // áp dụng đơn giá có đổi mới trước 30/4
-                const monthUsedOlder = dateNewest.month() - (dateNewest.day() >= 15 ? 0 : 1);
+                const monthUsedOlder = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
                 const olderThanhToan = Math.round((monthUsedOlder * older.donGiaThue * older.dienTich) / 12);
                 const monthUsedNewest = totalMonthUsed - monthUsedOlder;
                 const newestThanhToan = Math.round((newest.donGiaThue * newest.dienTich * monthUsedNewest) / 12);
@@ -77,7 +77,7 @@ export class KyThanhToanService {
                 // áp dụng đơn giá có đổi mới từ 1/7
                 const totalOlder = Math.round((older.dienTich * older.donGiaThue * totalMonthUsed) / 12);
                 const tienHaiKy = Math.round(totalOlder / 2);
-                const monthUsedOlder = dateNewest.month() - (dateNewest.day() >= 15 ? 0 : 1);
+                const monthUsedOlder = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
                 const monthUsedNewest = totalMonthUsed - monthUsedOlder;
                 const tienBoSung = (newest.dienTich * newest.donGiaThue * monthUsedNewest) / 12
                     - (older.dienTich * older.donGiaThue * monthUsedNewest) / 12;
