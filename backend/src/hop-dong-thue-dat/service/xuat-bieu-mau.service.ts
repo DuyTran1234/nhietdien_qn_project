@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 import * as path from 'path';
+import { bangTheoDoi } from "../constants/headers-xuat-excel";
 
 @Injectable()
 export class XuatBieuMauHopDong {
@@ -25,9 +26,21 @@ export class XuatBieuMauHopDong {
         titleCell.font = { bold: true, size: 14 };
         titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        // tạo bảng
+        // tạo header cho bảng
         const headerRow = worksheet.getRow(5);
-        const headers = [];
+        headerRow.values = bangTheoDoi.map((value) => value.header);
+        headerRow.font = { bold: true };
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        headerRow.height = 60;
+        // Đổ viền cho header
+        headerRow.eachCell((cell) => {
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
     }
 
     async writeFileExcel(workbook: ExcelJS.Workbook, targetDir: string, fileName: string) {
