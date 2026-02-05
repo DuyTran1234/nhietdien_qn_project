@@ -5,8 +5,6 @@ import { HopDongThueDatController } from "./controller/hop-dong-thue-dat.control
 import { HopDongThueDatEntity } from "./entity/hop-dong-thue-dat.entity";
 import { HopDongThueDatService } from "./service/hop-dong-thue-dat.service";
 import { KyThanhToanService } from "./service/ky-thanh-toan.service";
-import { XuatBieuMauHopDongService } from "./service/xuat-bieu-mau.service";
-import { XuatBieuMauHopDongController } from "./controller/xuat-bieu-mau.controller";
 
 @Module({
     imports: [
@@ -16,11 +14,13 @@ import { XuatBieuMauHopDongController } from "./controller/xuat-bieu-mau.control
     providers: [
         HopDongThueDatService,
         KyThanhToanService,
-        XuatBieuMauHopDongService,
     ],
     controllers: [
         HopDongThueDatController,
-        XuatBieuMauHopDongController,
     ],
+    exports: [
+        HopDongThueDatService,
+        KyThanhToanService,
+    ]
 })
 export class HopDongThueDatModule { }

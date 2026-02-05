@@ -1,9 +1,9 @@
-export const bangTheoDoi = [
+export const headersBangTheoDoi = [
     { header: 'Stt', key: 'stt', width: 5 },
     { header: 'Số hợp đồng/ngày tháng năm', key: 'soHopDong', width: 25 },
     { header: 'Quyết định cho thuê đất/ngày tháng năm', key: 'quyetDinhThueDat', width: 20 },
     { header: 'Đơn vị tính', key: 'unit', width: 10 },
-    { header: 'Diện tích', key: 'dienTich', width: 15 },
+    { header: 'Diện tích', key: 'dienTich', width: 15, style: { numFmt: '#,##0.00' } },
     { header: 'Thời gian thuê', key: 'thoiGianThue', width: 20 },
     { header: 'Mục đích thuê', key: 'mucDichThue', width: 40 },
     { header: 'Khu vực thuê', key: 'khuVucThue', width: 15 },

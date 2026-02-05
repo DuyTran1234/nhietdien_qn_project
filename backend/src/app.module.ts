@@ -6,6 +6,7 @@ import { ConfigModule } from "@nestjs/config";
 import { addTransactionalDataSource } from "typeorm-transactional";
 import { DataSource } from "typeorm";
 import { ThanhToanHopDongModule } from "./thanh-toan-hop-dong/thanh-toan-hop-dong.module";
+import { BieuMauHopDongModule } from "./bieu-mau-hop-dong/bieu-mau-hop-dong.module";
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { ThanhToanHopDongModule } from "./thanh-toan-hop-dong/thanh-toan-hop-don
         ThueSuatDatModule,
         HopDongThueDatModule,
         ThanhToanHopDongModule,
+        BieuMauHopDongModule,
     ],
     providers: [
 

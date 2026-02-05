@@ -32,8 +32,10 @@ export class KyThanhToanService {
         }
         if (!older && dateNewest.year() === now.year()) {
             // Thời điểm mới ký hợp đồng đầu tiên
-            const monthUseSkipped = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
-            const monthUsed = 12 - monthUseSkipped;
+            const totalMonthUsed = now.year() === hopDongEndDate.year() ?
+                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
+            const monthSkipped = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
+            const monthUsed = totalMonthUsed - monthSkipped;
             if (this.isTruoc30Thang4(dateNewest)) {
                 const totalYear = Math.round((newest.dienTich * newest.donGiaThue * monthUsed) / 12);
                 const tienKy = Math.round(totalYear / 2);
