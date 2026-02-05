@@ -11,8 +11,9 @@ export class BangTheoDoiService {
         private hopDongService: HopDongThueDatService,
         private fileService: FileExcelService,
     ) { }
-    async xuatBangTheoDoi(targetDir: string): Promise<{ message: string, path: string }> {
+    async xuatBangTheoDoi(): Promise<{ message: string, path: string, fileName: string }> {
         const [map, total] = await this.hopDongService.getHopDongThueDatWithOlder({ 'hopDongDate': 'desc' });
+        const now = dayjs();
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Bảng theo dõi');
         // 1. Định dạng chung cho cột (độ rộng)
@@ -30,7 +31,7 @@ export class BangTheoDoiService {
         // 3. Tiêu đề bảng (Merge và Center)
         worksheet.mergeCells('A3:L3');
         const titleCell = worksheet.getCell('A3');
-        titleCell.value = 'Bảng theo dõi các hợp đồng thuê đất';
+        titleCell.value = `Bảng theo dõi các hợp đồng thuê đất năm ${now.year()}`;
         titleCell.font = { bold: true, size: 12 };
         titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
         // 4. Thiết lập Header (Dòng 5)
@@ -66,7 +67,8 @@ export class BangTheoDoiService {
                     donGiaThueDat: hopDong.donGiaThue,
                     quyetDinhDonGia:
                         `Quyết định đơn giá số ${hopDong.quyetDinhDonGiaSo} ngày ${dayjs(hopDong.quyetDinhDonGiaDate).format("DD/MM/YYYY")}`,
-                    onDinhDonGia: `Đơn giá ổn định ${hopDong.soNamOnDinh} năm/1 lần (từ ngày ${hopDong.onDinhDonGiaDate})`,
+                    onDinhDonGia:
+                        `Đơn giá ổn định ${hopDong.soNamOnDinh} năm/1 lần (từ ngày ${dayjs(hopDong.onDinhDonGiaDate).format('DD/MM/YYYY')})`,
                     note: hopDong.ghiChu ?? '',
                 });
                 // Format dữ liệu trong bảng
@@ -90,7 +92,7 @@ export class BangTheoDoiService {
         lastRow.alignment = { horizontal: 'center' };
         lastRow.getCell('B').value = 'Người lập';
         lastRow.getCell('G').value = 'Phòng Tài chính và kế toán';
-
-        return await this.fileService.writeFileExcel(workbook, targetDir, "bangtheodoi.xlsx");
+        
+        return await this.fileService.writeFileExcel(workbook, `bang_theo_doi_${now.year()}.xlsx`);
     }
 }

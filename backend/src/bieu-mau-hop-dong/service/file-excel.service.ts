@@ -7,18 +7,19 @@ import * as path from "path";
 @Injectable()
 export class FileExcelService {
     async writeFileExcel(
-        workbook: ExcelJS.Workbook, targetDir: string, fileName: string
-    ): Promise<{ message: string, path: string }> {
-        const fullPath = path.join(targetDir, fileName);
-        if (!fs.existsSync(targetDir)) {
-            // fs.mkdirSync(targetDir, { recursive: true });
-            throw new BadRequestException('wrong file path');
+        workbook: ExcelJS.Workbook, fileName: string
+    ): Promise<{ message: string, path: string, fileName: string }> {
+        const storage = '.tmp'
+        const fullPath = path.join(process.cwd(), storage, fileName);
+        if (!fs.existsSync(path.dirname(fullPath))) {
+            fs.mkdirSync(path.dirname(fullPath), { recursive: true });
         }
         try {
             await workbook.xlsx.writeFile(fullPath);
             return {
                 message: 'Xuất file thành công!',
-                path: fullPath
+                path: fullPath,
+                fileName: fileName,
             };
         } catch (error) {
             throw new BadRequestException('Lỗi khi lưu file');
