@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { FileExcelService } from "./file-excel.service";
-import * as ExcelJS from 'exceljs';
 import dayjs from "dayjs";
 import { HopDongThueDatService } from "src/hop-dong-thue-dat/service/hop-dong-thue-dat.service";
 import { headersBangTinhTienKy1, headersBangTinhTienKy2 } from "../constants/headers-bang-tinh-tien-ky";
+import { FileExcelService } from "./file-excel.service";
+import { HeaderFormService } from "./header-form.service";
 
 @Injectable()
 export class BangTinhTienKyService {
     constructor(
         private hopDongService: HopDongThueDatService,
         private fileService: FileExcelService,
+        private headerFormService: HeaderFormService,
     ) { }
 
     async xuatBangTinhTienKy(soKy: number): Promise<{ message: string, path: string, fileName: string }> {
@@ -18,43 +19,11 @@ export class BangTinhTienKyService {
         const [listHopDong, total] =
             await this.hopDongService.getPaginationHopDongThueDat({ 'apDungDonGiaDate': 'desc' });
         const now = dayjs();
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet(`Bảng tính tiền thuê đất kỳ ${formatSoKy}`);
-        // 1. Định dạng chung cho cột (độ rộng) 
-        worksheet.columns = headers.map((value) => {
-            return {
-                key: value.key,
-                width: value.width,
-                style: value?.style,
-            }
-        });
-        // 2. Tiêu đề công ty
-        worksheet.mergeCells('A1:C1');
-        const companyCell = worksheet.getCell('A1');
-        companyCell.value = 'Công ty cổ phần nhiệt điện Quảng Ninh';
-        companyCell.font = { bold: true, size: 12 };
-        companyCell.alignment = { horizontal: 'center' };
-        // 3. Tiêu đề bảng (Merge và Center)
-        worksheet.mergeCells('A4:I4');
-        const titleCell = worksheet.getCell('A4');
-        titleCell.value = `Bảng tính tiền thuê đất phải nộp kỳ ${formatSoKy} năm ${now.year()}`;
-        titleCell.font = { bold: true, size: 12 };
-        titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
-        // 4. Thiết lập Header (Dòng 5)
-        const headersRow = worksheet.getRow(7);
-        headersRow.values = headers.map(value => value.header);
-        headersRow.font = { bold: true, size: 12 };
-        headersRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-        headersRow.height = 80;
-        headersRow.eachCell((cell) => {
-            cell.border = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
-            };
-        });
-
+        const { workbook, worksheet } = this.headerFormService.createHeaderForm(
+            `Bảng tính tiền thuê đất kỳ ${formatSoKy}`,
+            `BẢNG TÍNH TIỀN THUÊ ĐẤT PHẢI NỘP KỲ ${formatSoKy} NĂM ${now.year()}`,
+            headers,
+        );
         let totalYear = 0, tongTienKy = 0, tongDaThanhToan = 0;
         for (let i = 0; i < listHopDong.length; ++i) {
             const hopDong = listHopDong[i];
@@ -108,7 +77,7 @@ export class BangTinhTienKyService {
                 right: { style: 'thin' }
             };
         });
-        worksheet.addRow({ viTriThue: 'Bằng chữ: ........' }).height = 30;
+        worksheet.addRow({ viTriThue: 'Bằng chữ: ........' });
         worksheet.addRow([]); worksheet.addRow([]);
         const lastRow = worksheet.addRow([]);
         lastRow.getCell('B').value = 'Người lập';

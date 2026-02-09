@@ -7,6 +7,7 @@ import { addTransactionalDataSource } from "typeorm-transactional";
 import { DataSource } from "typeorm";
 import { ThanhToanHopDongModule } from "./thanh-toan-hop-dong/thanh-toan-hop-dong.module";
 import { BieuMauHopDongModule } from "./bieu-mau-hop-dong/bieu-mau-hop-dong.module";
+import { ThanhToanTaxModule } from "./thanh-toan-tax/thanh-toan-tax.module";
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { BieuMauHopDongModule } from "./bieu-mau-hop-dong/bieu-mau-hop-dong.modu
         HopDongThueDatModule,
         ThanhToanHopDongModule,
         BieuMauHopDongModule,
+        ThanhToanTaxModule,
     ],
     providers: [
 

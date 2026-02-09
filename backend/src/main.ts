@@ -11,6 +11,7 @@ types.setTypeParser(1082, (val: string) => {
 async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

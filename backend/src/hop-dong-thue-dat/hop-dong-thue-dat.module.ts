@@ -5,15 +5,19 @@ import { HopDongThueDatController } from "./controller/hop-dong-thue-dat.control
 import { HopDongThueDatEntity } from "./entity/hop-dong-thue-dat.entity";
 import { HopDongThueDatService } from "./service/hop-dong-thue-dat.service";
 import { KyThanhToanService } from "./service/ky-thanh-toan.service";
+import { NopTienTaxService } from "./service/nop-tien-tax.service";
+import { ThanhToanTaxModule } from "src/thanh-toan-tax/thanh-toan-tax.module";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([HopDongThueDatEntity]),
         ThanhToanHopDongModule,
+        ThanhToanTaxModule,
     ],
     providers: [
         HopDongThueDatService,
         KyThanhToanService,
+        NopTienTaxService,
     ],
     controllers: [
         HopDongThueDatController,
@@ -21,6 +25,7 @@ import { KyThanhToanService } from "./service/ky-thanh-toan.service";
     exports: [
         HopDongThueDatService,
         KyThanhToanService,
+        NopTienTaxService,
     ]
 })
 export class HopDongThueDatModule { }

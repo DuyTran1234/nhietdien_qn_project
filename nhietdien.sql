@@ -49,6 +49,14 @@ create table thanh_toan_hop_dong(
 );
 create index idx_thanh_toan_hop_dong_ref_hop_dong_uuid on thanh_toan_hop_dong(hop_dong_uuid);
 
+create table thanh_toan_tax(
+	id int generated always as identity primary key,
+	hop_dong_uuid uuid not null,
+	ngay_thanh_toan date not null,
+	tien_thanh_toan bigint not null,
+	note text
+);
+create index idx_thanh_toan_tax_hop_dong_uuid on thanh_toan_tax(hop_dong_uuid);
 
 
 

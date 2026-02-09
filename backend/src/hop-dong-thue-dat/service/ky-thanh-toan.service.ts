@@ -38,7 +38,6 @@ export class KyThanhToanService {
     async tinhToanTienKy(
         newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null
     ): Promise<ChiTietThanhToanDtoResponse[]> {
-        const hopDongEndDate = dayjs(newest.endDate);
         const dateNewest = dayjs(newest.apDungDonGiaDate);
         const now = dayjs();
         const listThanhToan = await this.thanhToanService.getThanhToanHopDongByHopDongUUID(
