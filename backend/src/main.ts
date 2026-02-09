@@ -11,7 +11,11 @@ types.setTypeParser(1082, (val: string) => {
 async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({
+    origin: true, // Tự động lấy origin từ request gửi lên, thay vì để dấu *
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true, // Cho phép gửi Cookie/Token
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
