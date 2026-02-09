@@ -12,7 +12,27 @@ export class KyThanhToanService {
     ) { }
 
     private isTruoc30Thang4(date: dayjs.Dayjs) {
-        return date.isBefore(dayjs(`${date.year()}-04-30`));
+        return date.isBefore(dayjs(`${date.year()}-05-01`));
+    }
+
+    monthUsed(newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null): number[] {
+        const now = dayjs();
+        const apDungDonGiaDateNewest = dayjs(newest.apDungDonGiaDate);
+        const endDate = dayjs(newest.endDate);
+        const totalUsedMonth =
+            endDate.year() === now.year() ? endDate.month() + 1 - (endDate.date() >= 15 ? 0 : 1) : 12;
+        if (!older && apDungDonGiaDateNewest.year() === now.year()) {
+            const monthSkipped =
+                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() >= 15 ? 0 : 1);
+            return [totalUsedMonth - monthSkipped];
+        } else if (older && apDungDonGiaDateNewest.year() === now.year()) {
+            const olderMonthUsed =
+                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() >= 15 ? 0 : 1);
+            const newestMonthUsed = totalUsedMonth - olderMonthUsed;
+            return [newestMonthUsed, olderMonthUsed];
+        } else {
+            return [totalUsedMonth];
+        }
     }
 
     async tinhToanTienKy(
@@ -30,48 +50,14 @@ export class KyThanhToanService {
             thanhToanKy2 = thanhToanKy2 + (thanhToan.ky === KyThanhToan.KyII ? thanhToan.tienThanhToan : 0);
             thanhToanKy3 = thanhToanKy3 + (thanhToan.ky === KyThanhToan.BoSung ? thanhToan.tienThanhToan : 0);
         }
-        if (!older && dateNewest.year() === now.year()) {
-            // Thời điểm mới ký hợp đồng đầu tiên
-            const totalMonthUsed = now.year() === hopDongEndDate.year() ?
-                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
-            const monthSkipped = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
-            const monthUsed = totalMonthUsed - monthSkipped;
-            if (this.isTruoc30Thang4(dateNewest)) {
-                // ký mới và áp dụng trước 30/4
-                const totalYear = Math.round((newest.dienTich * newest.donGiaThue * monthUsed) / 12);
-                const tienKy = Math.round(totalYear / 2);
-                return [
-                    new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy1),
-                    new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy2),
-                ];
-            } else {
-                // ký mới và áp dụng từ 1/7
-                const totalYear = Math.round((newest.dienTich * newest.donGiaThue * monthUsed) / 12);
-                return [
-                    new ChiTietThanhToanDtoResponse(0, thanhToanKy1),
-                    new ChiTietThanhToanDtoResponse(totalYear, thanhToanKy2),
-                ];
-            }
-        }
-        else if (!older || dateNewest.year() < now.year()) {
-            const totalMonthUsed = now.year() === hopDongEndDate.year() ?
-                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
-            const totalYear = Math.round((newest.dienTich * newest.donGiaThue * totalMonthUsed) / 12);
-            const tienKy = Math.round(totalYear / 2);
-            return [
-                new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy1),
-                new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy2),
-            ];
-        } else {
-            const totalMonthUsed = now.year() === hopDongEndDate.year() ?
-                hopDongEndDate.month() + 1 - (hopDongEndDate.date() >= 15 ? 0 : 1) : 12;
+        const [newestMonthUsed, olderMonthUsed = 0] = this.monthUsed(newest, older);
+        const totalMonthUsed = newestMonthUsed + olderMonthUsed;
+        if (older && dateNewest.year() === now.year()) {
             if (this.isTruoc30Thang4(dateNewest)) {
                 // áp dụng đơn giá có đổi mới trước 30/4
-                const monthUsedOlder = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
-                const olderThanhToan = Math.round((monthUsedOlder * older.donGiaThue * older.dienTich) / 12);
-                const monthUsedNewest = totalMonthUsed - monthUsedOlder;
-                const newestThanhToan = Math.round((newest.donGiaThue * newest.dienTich * monthUsedNewest) / 12);
-                const tienKy = (olderThanhToan + newestThanhToan) / 2;
+                const olderThanhToan = Math.round((olderMonthUsed * older.donGiaThue * older.dienTich) / 12);
+                const newestThanhToan = Math.round((newest.donGiaThue * newest.dienTich * newestMonthUsed) / 12);
+                const tienKy = Math.round((olderThanhToan + newestThanhToan) / 2);
                 return [
                     new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy1),
                     new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy2),
@@ -80,16 +66,21 @@ export class KyThanhToanService {
                 // áp dụng đơn giá có đổi mới từ 1/7
                 const totalOlder = Math.round((older.dienTich * older.donGiaThue * totalMonthUsed) / 12);
                 const tienHaiKy = Math.round(totalOlder / 2);
-                const monthUsedOlder = dateNewest.month() + 1 - (dateNewest.date() >= 15 ? 0 : 1);
-                const monthUsedNewest = totalMonthUsed - monthUsedOlder;
-                const tienBoSung = (newest.dienTich * newest.donGiaThue * monthUsedNewest) / 12
-                    - (older.dienTich * older.donGiaThue * monthUsedNewest) / 12;
+                const tienBoSung = (newest.dienTich * newest.donGiaThue * newestMonthUsed) / 12
+                    - (older.dienTich * older.donGiaThue * newestMonthUsed) / 12;
                 return [
                     new ChiTietThanhToanDtoResponse(tienHaiKy, thanhToanKy1),
                     new ChiTietThanhToanDtoResponse(tienHaiKy, thanhToanKy2),
-                    new ChiTietThanhToanDtoResponse(tienBoSung, thanhToanKy3),
+                    new ChiTietThanhToanDtoResponse(Math.round(tienBoSung), thanhToanKy3),
                 ];
             }
+        } else {
+            const totalYear = Math.round((newest.donGiaThue * newest.dienTich * newestMonthUsed)) / 12;
+            const tienKy = Math.round(totalYear / 2);
+            return [
+                new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy1),
+                new ChiTietThanhToanDtoResponse(tienKy, thanhToanKy2),
+            ];
         }
     }
 }

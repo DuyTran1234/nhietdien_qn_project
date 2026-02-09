@@ -29,10 +29,10 @@ export class BangTinhTienKyService {
             }
         });
         // 2. Tiêu đề công ty
-        worksheet.mergeCells('A1:D1');
+        worksheet.mergeCells('A1:C1');
         const companyCell = worksheet.getCell('A1');
         companyCell.value = 'Công ty cổ phần nhiệt điện Quảng Ninh';
-        companyCell.font = { bold: true, size: 14 };
+        companyCell.font = { bold: true, size: 12 };
         companyCell.alignment = { horizontal: 'center' };
         // 3. Tiêu đề bảng (Merge và Center)
         worksheet.mergeCells('A4:I4');
@@ -46,7 +46,6 @@ export class BangTinhTienKyService {
         headersRow.font = { bold: true, size: 12 };
         headersRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         headersRow.height = 80;
-        // Đổ viền cho header
         headersRow.eachCell((cell) => {
             cell.border = {
                 top: { style: 'thin' },
@@ -75,6 +74,7 @@ export class BangTinhTienKyService {
                 canThanhToan: hopDong.chiTietCacKy[soKy - 1].tongSoTien - hopDong.chiTietCacKy[soKy - 1].daThanhToan,
                 ghiChu: hopDong.ghiChu ?? '',
             });
+            row.height = 30;
             row.font = { size: 12 };
             row.eachCell((cell) => {
                 cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
@@ -98,6 +98,7 @@ export class BangTinhTienKyService {
             ghiChu: '',
         });
         summaryRow.font = { bold: true, size: 12 };
+        summaryRow.height = 30;
         summaryRow.eachCell((cell) => {
             cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
             cell.border = {
@@ -107,13 +108,14 @@ export class BangTinhTienKyService {
                 right: { style: 'thin' }
             };
         });
-        worksheet.addRow({ viTriThue: 'Bằng chữ: ........' });
+        worksheet.addRow({ viTriThue: 'Bằng chữ: ........' }).height = 30;
         worksheet.addRow([]); worksheet.addRow([]);
         const lastRow = worksheet.addRow([]);
         lastRow.getCell('B').value = 'Người lập';
         lastRow.getCell('E').value = 'Kế toán trưởng';
         lastRow.getCell('H').value = 'Tổng giám đốc';
 
-        return await this.fileService.writeFileExcel(workbook, `bang_tinh_tien_ky_${now.year()}.xlsx`);
+        return await
+            this.fileService.writeFileExcel(workbook, `bang_tinh_tien_ky_${formatSoKy}_${now.year()}.xlsx`);
     }
 }
