@@ -19,7 +19,7 @@ export class BangTheoDoiService {
             'Bảng theo dõi', `Bảng theo dõi các hợp đồng thuê đất năm ${now.year()}`,
             headersBangTheoDoi,
         )
-        // 5. Thêm dữ liệu mẫu (Dòng 6)
+        // Thêm dữ liệu mẫu
         let i = 1;
         for (const list of map.values()) {
             for (let index = 0; index < list.length; ++index) {

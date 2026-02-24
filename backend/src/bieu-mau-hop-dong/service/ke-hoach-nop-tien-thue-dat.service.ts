@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import dayjs from "dayjs";
+import * as ExcelJS from 'exceljs';
+import { HopDongThueDatDtoResponse } from "src/hop-dong-thue-dat/dto/response/hop-dong-thue-dat.dto.response";
 import { HopDongThueDatService } from "src/hop-dong-thue-dat/service/hop-dong-thue-dat.service";
 import { KyThanhToanService } from "src/hop-dong-thue-dat/service/ky-thanh-toan.service";
 import { headersKeHoachNopTienThueDat } from "../constants/headers-ke-hoach-nop-tien-thue-dat";
@@ -11,13 +13,46 @@ export class KeHoachNopTienThueDatService {
     constructor(
         private hopDongService: HopDongThueDatService,
         private fileService: FileExcelService,
-        private kyThanhToanService: KyThanhToanService,
         private headerFormService: HeaderFormService,
     ) { }
 
+    private tinhToanHopDong(
+        worksheet: ExcelJS.Worksheet, stt: string, hopDong: HopDongThueDatDtoResponse,
+        isNewestFlag: boolean,
+    ): number {
+        if (!hopDong) {
+            return 0;
+        }
+        const monthUsed =
+            isNewestFlag ? hopDong.chiTietSuDung.newestMonthUsed : hopDong.chiTietSuDung.olderMonthUsed;
+        const tongTien = Math.round(hopDong.dienTich * hopDong.donGiaThue * monthUsed / 12);
+        const row = worksheet.addRow({
+            stt: stt,
+            viTriThue: hopDong.viTriThue,
+            soHopDong: `Hợp đồng số ${hopDong.soHopDong} ngày ${dayjs(hopDong.hopDongDate).format('DD/MM/YYYY')}`,
+            dienTich: hopDong.dienTich,
+            donGia: hopDong.donGiaThue,
+            soThangSuDung: monthUsed,
+            tongTien: tongTien,
+            ghiChu: hopDong.ghiChu ?? '',
+        });
+        row.height = 35;
+        row.font = { size: 12 };
+        row.eachCell((cell) => {
+            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
+        return tongTien;
+    }
+
     async xuatKeHoachNopTienThueDat() {
-        const [mapHopDong, total] =
-            await this.hopDongService.getHopDongThueDatWithOlder({ 'apDungDonGiaDate': 'desc' });
+        const [listHopDong, total] =
+            await this.hopDongService.getPaginationHopDongThueDat({ 'apDungDonGiaDate': 'desc' });
         const now = dayjs();
         const { workbook, worksheet } =
             this.headerFormService.createHeaderForm(
@@ -26,39 +61,16 @@ export class KeHoachNopTienThueDatService {
             );
         let index = 1;
         let sumTongTien = 0;
-        for (const listHopDong of mapHopDong.values()) {
-            const listUsedMonth = this.kyThanhToanService.monthUsed(listHopDong[0], listHopDong[1] ?? null);
-            for (let i = 0; i < listUsedMonth.length; ++i) {
-                const Hd = listHopDong[i];
-                const tongTien = Math.round(Hd.dienTich * Hd.donGiaThue * listUsedMonth[i] / 12);
-                sumTongTien += tongTien;
-                const row = worksheet.addRow({
-                    stt: i > 0 ? `${index}.${i}` : `${index}`,
-                    mucDichThue: Hd.mucDichThue,
-                    soHopDong: `Hợp đồng số ${Hd.soHopDong} ngày ${dayjs(Hd.hopDongDate).format('DD/MM/YYYY')}`,
-                    dienTich: Hd.dienTich,
-                    donGia: Hd.donGiaThue,
-                    soThangSuDung: listUsedMonth[i],
-                    tongTien: tongTien,
-                    ghiChu: Hd.ghiChu ?? '',
-                });
-                row.height = 30;
-                row.font = { size: 12 };
-                row.eachCell((cell) => {
-                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-                    cell.border = {
-                        top: { style: 'thin' },
-                        left: { style: 'thin' },
-                        bottom: { style: 'thin' },
-                        right: { style: 'thin' }
-                    };
-                });
+        for (const hopDong of listHopDong) {
+            sumTongTien += this.tinhToanHopDong(worksheet, `${index}`, hopDong, true);
+            if (hopDong.olderHopDong && hopDong.chiTietSuDung.olderMonthUsed > 0) {
+                sumTongTien += this.tinhToanHopDong(worksheet, `${index}.1`, hopDong.olderHopDong, false);
             }
             ++index;
         }
         const summaryRow = worksheet.addRow({
             stt: '',
-            mucDichThue: 'Tổng cộng',
+            viTriThue: 'Tổng cộng',
             soHopDong: '',
             dienTich: '',
             donGia: '',
@@ -83,6 +95,7 @@ export class KeHoachNopTienThueDatService {
         totalRow.getCell('B').value = 'Người lập';
         totalRow.getCell('F').value = 'Phòng tài chính và kế toán';
 
-        return await this.fileService.writeFileExcel(workbook, `lap_ke_hoach_thue_dat_${now.year()}.xlsx`);
+        return await
+            this.fileService.writeFileExcel(workbook, `lap_ke_hoach_thue_dat_${now.year()}.xlsx`);
     }
 }

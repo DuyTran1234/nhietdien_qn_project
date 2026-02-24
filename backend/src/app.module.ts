@@ -8,6 +8,7 @@ import { DataSource } from "typeorm";
 import { ThanhToanHopDongModule } from "./thanh-toan-hop-dong/thanh-toan-hop-dong.module";
 import { BieuMauHopDongModule } from "./bieu-mau-hop-dong/bieu-mau-hop-dong.module";
 import { ThanhToanTaxModule } from "./thanh-toan-tax/thanh-toan-tax.module";
+import { CoDongModule } from "./co-dong/co-dong.module";
 
 @Module({
     imports: [
@@ -37,6 +38,7 @@ import { ThanhToanTaxModule } from "./thanh-toan-tax/thanh-toan-tax.module";
         ThanhToanHopDongModule,
         BieuMauHopDongModule,
         ThanhToanTaxModule,
+        CoDongModule,
     ],
     providers: [
 

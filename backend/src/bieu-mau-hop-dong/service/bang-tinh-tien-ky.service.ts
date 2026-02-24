@@ -13,7 +13,9 @@ export class BangTinhTienKyService {
         private headerFormService: HeaderFormService,
     ) { }
 
-    async xuatBangTinhTienKy(soKy: number): Promise<{ message: string, path: string, fileName: string }> {
+    async xuatBangTinhTienKy(
+        soKy: number
+    ): Promise<{ message: string, path: string, fileName: string }> {
         const formatSoKy = soKy === 1 ? 'I' : 'II';
         const headers = soKy === 1 ? headersBangTinhTienKy1 : headersBangTinhTienKy2;
         const [listHopDong, total] =

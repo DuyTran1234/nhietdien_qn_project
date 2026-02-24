@@ -2,7 +2,7 @@ import { ThanhToanHopDongEntity } from "src/thanh-toan-hop-dong/entity/thanh-toa
 import { ThueSuatDatEntity } from "src/thue-suat-dat/entity/thue-suat-dat.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'hop_dong' })
+@Entity({ name: 'hop_dong_thue_dat' })
 export class HopDongThueDatEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -15,9 +15,6 @@ export class HopDongThueDatEntity {
 
     @Column({ name: 'hop_dong_date', type: 'date' })
     hopDongDate: string;
-
-    @Column({ name: 'file_hop_dong', nullable: true })
-    fileHopDong: string;
 
     @Column({
         name: 'dien_tich',
@@ -84,9 +81,6 @@ export class HopDongThueDatEntity {
 
     @Column({ name: 'quyet_dinh_thue_dat_date', type: 'date' })
     quyetDinhThueDatDate: string;
-
-    @Column({ name: 'file_quyet_dinh_cho_thue_dat' })
-    fileQuyetDinhChoThueDat: string;
 
     @Column({ name: 'quyet_dinh_don_gia_so' })
     quyetDinhDonGiaSo: string;

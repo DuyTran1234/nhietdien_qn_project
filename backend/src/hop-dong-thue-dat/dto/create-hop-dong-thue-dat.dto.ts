@@ -3,7 +3,6 @@ export class CreateHopDongThueDatDto {
     hopDongUUID: string;
     soHopDong: string
     hopDongDate: string;
-    fileHopDong: string;
     dienTich: number;
     batDauThue: string;
     soNamThue: number;
@@ -17,7 +16,6 @@ export class CreateHopDongThueDatDto {
     ghiChu: string;
     quyetDinhThueDatSo: string;
     quyetDinhThueDatDate: string;
-    fileQuyetDinhChoThueDat: string;
     quyetDinhDonGiaSo: string;
     quyetDinhDonGiaDate: string;
     donGiaThue: number;

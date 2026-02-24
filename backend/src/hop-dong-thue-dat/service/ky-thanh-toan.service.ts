@@ -4,6 +4,7 @@ import { KyThanhToan } from "src/thanh-toan-hop-dong/enum/ky-thanh-toan.enum";
 import { ThanhToanHopDongService } from "src/thanh-toan-hop-dong/service/thanh-toan-hop-dong.service";
 import { ChiTietThanhToanDtoResponse } from "../dto/response/chi-tiet-thanh-toan.dto.response";
 import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
+import { ChiTietSuDungResponseDto } from "../dto/response/chi-tiet-su-dung.response.dto";
 
 @Injectable()
 export class KyThanhToanService {
@@ -15,7 +16,7 @@ export class KyThanhToanService {
         return date.isBefore(dayjs(`${date.year()}-05-01`));
     }
 
-    monthUsed(newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null): number[] {
+    monthUsed(newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null): ChiTietSuDungResponseDto {
         const now = dayjs();
         const apDungDonGiaDateNewest = dayjs(newest.apDungDonGiaDate);
         const endDate = dayjs(newest.endDate);
@@ -23,20 +24,29 @@ export class KyThanhToanService {
             endDate.year() === now.year() ? endDate.month() + 1 - (endDate.date() >= 15 ? 0 : 1) : 12;
         if (!older && apDungDonGiaDateNewest.year() === now.year()) {
             const monthSkipped =
-                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() >= 15 ? 0 : 1);
-            return [totalUsedMonth - monthSkipped];
+                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() > 15 ? 0 : 1);
+            return {
+                newestMonthUsed: totalUsedMonth - monthSkipped,
+                olderMonthUsed: 0,
+            };
         } else if (older && apDungDonGiaDateNewest.year() === now.year()) {
             const olderMonthUsed =
-                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() >= 15 ? 0 : 1);
+                apDungDonGiaDateNewest.month() + 1 - (apDungDonGiaDateNewest.date() > 15 ? 0 : 1);
             const newestMonthUsed = totalUsedMonth - olderMonthUsed;
-            return [newestMonthUsed, olderMonthUsed];
+            return {
+                newestMonthUsed, olderMonthUsed
+            };
         } else {
-            return [totalUsedMonth];
+            return {
+                newestMonthUsed: totalUsedMonth,
+                olderMonthUsed: 0,
+            };
         }
     }
 
     async tinhToanTienKy(
-        newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null
+        newest: HopDongThueDatEntity, older: HopDongThueDatEntity | null,
+        chiTietSuDung: ChiTietSuDungResponseDto
     ): Promise<ChiTietThanhToanDtoResponse[]> {
         const dateNewest = dayjs(newest.apDungDonGiaDate);
         const now = dayjs();
@@ -49,7 +59,7 @@ export class KyThanhToanService {
             thanhToanKy2 = thanhToanKy2 + (thanhToan.ky === KyThanhToan.KyII ? thanhToan.tienThanhToan : 0);
             thanhToanKy3 = thanhToanKy3 + (thanhToan.ky === KyThanhToan.BoSung ? thanhToan.tienThanhToan : 0);
         }
-        const [newestMonthUsed, olderMonthUsed = 0] = this.monthUsed(newest, older);
+        const { newestMonthUsed, olderMonthUsed } = chiTietSuDung;
         const totalMonthUsed = newestMonthUsed + olderMonthUsed;
         if (older && dateNewest.year() === now.year()) {
             if (this.isTruoc30Thang4(dateNewest)) {

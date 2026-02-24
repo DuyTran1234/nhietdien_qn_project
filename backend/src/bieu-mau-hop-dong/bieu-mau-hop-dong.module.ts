@@ -6,6 +6,9 @@ import { BangTinhTienKyService } from "./service/bang-tinh-tien-ky.service";
 import { FileExcelService } from "./service/file-excel.service";
 import { HeaderFormService } from "./service/header-form.service";
 import { KeHoachNopTienThueDatService } from "./service/ke-hoach-nop-tien-thue-dat.service";
+import { KeHoachNopTaxService } from "./service/ke-hoach-nop-tax.service";
+import { BangTinhTienTaxService } from "./service/bang-tinh-tien-tax.service";
+import { NopBoSungThueDatService } from "./service/bang-nop-bo-sung-thue-dat.service";
 
 @Module({
     imports: [
@@ -17,6 +20,9 @@ import { KeHoachNopTienThueDatService } from "./service/ke-hoach-nop-tien-thue-d
         FileExcelService,
         BangTinhTienKyService,
         KeHoachNopTienThueDatService,
+        KeHoachNopTaxService,
+        BangTinhTienTaxService,
+        NopBoSungThueDatService,
     ],
     controllers: [
         BieuMauHopDongController,

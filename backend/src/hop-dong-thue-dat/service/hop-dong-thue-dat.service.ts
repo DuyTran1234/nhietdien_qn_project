@@ -8,12 +8,14 @@ import { HopDongThueDatDtoResponse } from "../dto/response/hop-dong-thue-dat.dto
 import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
 import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
 import { KyThanhToanService } from "./ky-thanh-toan.service";
+import { NopTienTaxService } from "./nop-tien-tax.service";
 
 @Injectable()
 export class HopDongThueDatService {
     constructor(
         @InjectRepository(HopDongThueDatEntity) private hopDongThueDat: Repository<HopDongThueDatEntity>,
         private kyThanhToanService: KyThanhToanService,
+        private nopTienTaxService: NopTienTaxService,
     ) { }
 
     @Transactional()
@@ -48,7 +50,7 @@ export class HopDongThueDatService {
     }
 
     async getHopDongThueDatWithOlder(
-        sortDto?: any, limit?: number, page?: number, findHD?: string | undefined
+        sortDto?: any, limit?: number, page?: number, findHD?: string
     ): Promise<[Map<string, HopDongThueDatEntity[]>, number]> {
         const map = new Map<string, HopDongThueDatEntity[]>();
         const startYear = `${dayjs().year()}-01-01`;
@@ -62,7 +64,7 @@ export class HopDongThueDatService {
             relations: {
                 thueSuat: true,
             },
-            take: limit,
+            take: limit == 0 ? undefined : limit,
             skip: limit && page ? limit * page : undefined,
             order: sortDto,
         });
@@ -95,10 +97,22 @@ export class HopDongThueDatService {
         const [map, total] = await this.getHopDongThueDatWithOlder(sortDto, limit, page, findHD);
         const listResult = new Array<HopDongThueDatDtoResponse>();
         for (const listHD of map.values()) {
+            const newest = listHD[0];
+            const older = listHD[1] ?? null;
+            const chiTietSuDung = this.kyThanhToanService.monthUsed(newest, older);
             const chiTietCacKy =
-                await this.kyThanhToanService.tinhToanTienKy(listHD[0], listHD.length > 1 ? listHD[1] : null);
-            const hopDongDto = Object.assign(new HopDongThueDatDtoResponse(), { ...listHD[0], chiTietCacKy });
-            listResult.push(hopDongDto);
+                await this.kyThanhToanService.tinhToanTienKy(newest, older, chiTietSuDung);
+            const chiTietNopTax =
+                await this.nopTienTaxService.nopTienTaxPnn(newest, older, chiTietSuDung);
+            const olderDto = older && chiTietSuDung.olderMonthUsed > 0 ? Object.assign(
+                new HopDongThueDatDtoResponse(),
+                { ...older, chiTietSuDung, chiTietCacKy, chiTietNopTax, olderHopDong: null }
+            ) : null;
+            const newestDto = Object.assign(
+                new HopDongThueDatDtoResponse(),
+                { ...newest, chiTietSuDung, chiTietCacKy, chiTietNopTax, olderHopDong: olderDto }
+            );
+            listResult.push(newestDto);
         }
         return [listResult, total];
     }
