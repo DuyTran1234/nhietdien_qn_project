@@ -9,6 +9,7 @@ import { ThanhToanHopDongModule } from "./thanh-toan-hop-dong/thanh-toan-hop-don
 import { BieuMauHopDongModule } from "./bieu-mau-hop-dong/bieu-mau-hop-dong.module";
 import { ThanhToanTaxModule } from "./thanh-toan-tax/thanh-toan-tax.module";
 import { CoDongModule } from "./co-dong/co-dong.module";
+import { CoTucModule } from "./co-tuc/co-tuc.module";
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { CoDongModule } from "./co-dong/co-dong.module";
         BieuMauHopDongModule,
         ThanhToanTaxModule,
         CoDongModule,
+        CoTucModule,
     ],
     providers: [
 

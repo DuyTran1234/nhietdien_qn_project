@@ -81,5 +81,43 @@ create table co_dong(
 );
 create index idx_co_dong_search_col_gin on co_dong using gin(search_col gin_trgm_ops);
  
+create table co_tuc(
+	id int generated always as identity primary key,
+	ho_ten varchar(255) not null,
+	sid varchar(255) not null unique,
+	so_dksh varchar(255) not null unique,
+	ngay_cap varchar(255) not null,
+	dia_chi varchar(512) not null,
+	email varchar(255),
+	dien_thoai varchar(255),
+  	quoc_tich varchar(255) not null,
+  	stk varchar(1024),
+  	search_col text generated always as (
+		ho_ten ||  ' ' ||
+		sid || ' ' ||
+		so_dksh || ' ' ||
+		coalesce(dien_thoai, '') || ' ' ||
+		coalesce(email, '')
+	) stored
+);
+create index idx_co_tuc_search_col_gin on co_tuc using gin(search_col gin_trgm_ops);
+
+create table chi_tiet_co_tuc(
+	id int generated always as identity primary key,
+	so_dksh varchar(255) not null,
+	slckng_chualk int not null,
+	slckng_dalk int not null,
+	slckng_chualk_truoc_tax bigint not null,
+	slckng_dalk_truoc_tax bigint not null,
+	slckng_chualk_sau_tax bigint not null,
+	slckng_dalk_sau_tax bigint not null,
+	nam_chot int not null
+);
+create index idx_chi_tiet_co_tuc_nam_chot on chi_tiet_co_tuc(nam_chot);
+
+
+
+
+
 
 

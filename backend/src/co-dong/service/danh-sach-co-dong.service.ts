@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CoDongEntity } from "../entity/co-dong.entity";
-import { ILike, Repository } from "typeorm";
+import { ILike, LessThan, MoreThanOrEqual, Repository } from "typeorm";
 import * as ExcelJS from 'exceljs';
 import { CreateCoDongDto } from "../dto/request/create-co-dong.request.dto";
 import path from "path";
@@ -61,6 +61,11 @@ export class DanhSachCoDongService {
         return list[0];
     }
 
+    private async getFivePercentSlckng(): Promise<number> {
+        const total = await this.coDongRepo.sum("slckngCong") ?? 0;
+        return Math.round(total * 5 / 100);
+    }
+
     @Transactional()
     async createDanhSachCoDong(file: Express.Multer.File) {
         const ext = path.extname(file.originalname);
@@ -97,13 +102,24 @@ export class DanhSachCoDongService {
     }
 
     async getPaginationCoDong(
-        sortDto?: any, limit?: number, page?: number, searchCoDong?: string
+        sortDto?: any, limit?: number, page?: number, searchCoDong?: string,
+        filterCoDongLon?: boolean, filterType?: number, filterCntc?: number,
     ): Promise<[CoDongResponseDto[], number]> {
+        const optinalWhere = {
+            type: filterType,
+            cntc: filterCntc,
+        } as any;
+        if (filterCoDongLon != undefined) {
+            const fivePercent = await this.getFivePercentSlckng();
+            optinalWhere.slckngCong =
+                filterCoDongLon ? MoreThanOrEqual(fivePercent) : LessThan(fivePercent);
+        }
         const [list, total] = await this.coDongRepo.findAndCount({
             take: limit == 0 ? undefined : limit,
             skip: limit && page ? limit * page : undefined,
             where: {
                 searchCol: searchCoDong ? ILike(`%${searchCoDong}%`) : undefined,
+                ...optinalWhere
             },
             order: sortDto
         });
