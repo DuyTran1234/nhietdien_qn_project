@@ -6,7 +6,7 @@ export class ChiTietCoTucEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'so_dksh', type: "varchar", length: 255 })
+    @Column({ name: 'so_dksh', type: "varchar" })
     soDKSH: string;
 
     @Column({ name: 'slckng_chualk', type: "int" })
