@@ -105,12 +105,15 @@ create index idx_co_tuc_search_col_gin on co_tuc using gin(search_col gin_trgm_o
 create table chi_tiet_co_tuc(
 	id int generated always as identity primary key,
 	so_dksh varchar(255) not null,
+	so_dksh_nam_chot varchar(255) not null unique,
 	slckng_chualk int not null,
 	slckng_dalk int not null,
 	slckng_chualk_truoc_tax bigint not null,
 	slckng_dalk_truoc_tax bigint not null,
 	slckng_chualk_sau_tax bigint not null,
 	slckng_dalk_sau_tax bigint not null,
+	thanhtoan_chualk boolean not null default false,
+	thanhtoan_dalk boolean not null default true,
 	nam_chot int not null
 );
 create index idx_chi_tiet_co_tuc_nam_chot on chi_tiet_co_tuc(nam_chot);

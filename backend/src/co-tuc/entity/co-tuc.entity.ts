@@ -1,36 +1,36 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChiTietCoTucEntity } from "./chi-tiet-co-tuc.entity";
 
-@Entity('co-tuc')
+@Entity('co_tuc')
 export class CoTucEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'ho_ten', type: "varchar", length: 255 })
+    @Column({ name: 'ho_ten', type: "varchar" })
     hoTen: string;
 
-    @Column({ name: 'sid', type: "varchar", length: 255, unique: true })
+    @Column({ name: 'sid', type: "varchar", unique: true })
     sid: string;
 
-    @Column({ name: 'so_dksh', type: "varchar", length: 255, unique: true })
+    @Column({ name: 'so_dksh', type: "varchar", unique: true })
     soDKSH: string;
 
-    @Column({ name: 'ngay_cap', type: "varchar", length: 255 })
+    @Column({ name: 'ngay_cap', type: "varchar", })
     ngayCap: string;
 
-    @Column({ name: "dia_chi", type: "varchar", length: 512 })
+    @Column({ name: "dia_chi", type: "varchar", })
     diaChi: string;
 
-    @Column({ name: "email", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "email", type: "varchar", nullable: true })
     email: string;
 
-    @Column({ name: "dien_thoai", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "dien_thoai", type: "varchar", nullable: true })
     dienThoai: string;
 
-    @Column({ name: "quoc_tich", type: "varchar", length: 255 })
+    @Column({ name: "quoc_tich", type: "varchar", })
     quocTich: string;
 
-    @Column({ name: "quoc_tich", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "stk", type: "varchar", nullable: true })
     stk: string;
 
     @Column({

@@ -1,13 +1,16 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CoTucEntity } from "./co-tuc.entity";
 
-@Entity('chi-tiet-co-tuc')
+@Entity('chi_tiet_co_tuc')
 export class ChiTietCoTucEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ name: 'so_dksh', type: "varchar" })
     soDKSH: string;
+
+    @Column({ name: 'so_dksh_nam_chot', type: "varchar", unique: true })
+    soDkshNamChot: string;
 
     @Column({ name: 'slckng_chualk', type: "int" })
     slckngChuaLk: number;
@@ -51,10 +54,19 @@ export class ChiTietCoTucEntity {
     })
     slckngDaLkSauTax: number;
 
+    @Column({ name: 'thanhtoan_chualk', type: "boolean" })
+    thanhToanChuaLk: boolean;
+
+    @Column({ name: 'thanhtoan_dalk', type: "boolean" })
+    thanhToanDaLk: boolean;
+
     @Column({ name: 'nam_chot', type: 'int' })
     namChot: number;
 
     @ManyToOne(() => CoTucEntity, (coTuc: CoTucEntity) => coTuc.chiTietCoTuc)
-    @JoinColumn({ name: 'so_dksh' })
+    @JoinColumn({
+        name: 'so_dksh',
+        referencedColumnName: 'soDKSH'
+    })
     coTuc: CoTucEntity;
 }

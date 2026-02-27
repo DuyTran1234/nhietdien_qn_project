@@ -104,7 +104,7 @@ export class DanhSachCoDongService {
     async getPaginationCoDong(
         sortDto?: any, limit?: number, page?: number, searchCoDong?: string,
         filterCoDongLon?: boolean, filterType?: number, filterCntc?: number,
-    ): Promise<[CoDongResponseDto[], number]> {
+    ): Promise<{ list: CoDongResponseDto[], total: number }> {
         const optinalWhere = {
             type: filterType,
             cntc: filterCntc,
@@ -130,6 +130,8 @@ export class DanhSachCoDongService {
             const coDong = Object.assign(new CoDongResponseDto(), { ...rest, ngayCap: ngayCapList });
             listCoDong.push(coDong);
         }
-        return [listCoDong, total];
+        return {
+            list: listCoDong, total
+        };
     }
 }

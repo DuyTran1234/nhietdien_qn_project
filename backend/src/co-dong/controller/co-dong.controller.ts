@@ -47,7 +47,7 @@ export class CoDongController {
         @Query('filterCoDongLon', new ParseBoolPipe({ optional: true })) filterCoDongLon: boolean,
         @Query('filterType', new ParseIntPipe({ optional: true })) filterType: number,
         @Query('filterCntc', new ParseIntPipe({ optional: true })) filterCntc: number,
-    ): Promise<[CoDongResponseDto[], number]> {
+    ) {
         return await this.danhSachCoDongService.getPaginationCoDong(
             sortDto, limit, page, searchCoDong, filterCoDongLon, filterType, filterCntc
         );
