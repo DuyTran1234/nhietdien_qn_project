@@ -5,4 +5,4 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-CMD ["sh", "-c", "cp -r /app/dist/. /web_static/"]
+CMD ["sh", "-c", "mkdir -p /web_static && cp -r /app/dist/. /web_static/ && tail -f /dev/null"]
