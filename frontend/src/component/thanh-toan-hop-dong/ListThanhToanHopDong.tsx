@@ -15,7 +15,7 @@ export default function ListThanhToanHopDong() {
     const { uuid } = useParams();
     const [listThanhToan, setListThanhToan] = useState<ThanhToanHopDongModel[]>([]);
     const [year, setYear] = useState(dayjs().year());
-    const [years, setYears] = useState(() => {
+    const [years] = useState(() => {
         const arr = [];
         for (let i = dayjs().year(); i >= 2025; --i) {
             arr.push(i);

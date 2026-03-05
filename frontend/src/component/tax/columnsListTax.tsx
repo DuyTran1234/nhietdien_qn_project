@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
