@@ -31,9 +31,8 @@ services:
       - nhietdien-backend
     env_file:
       - .env
-    volumes:
-      # Cắm một đầu vào tận hang ổ /app/dist
-      - frontend_data:/web_static
+    ports:
+      - "5173:5173"
     networks:
       - nhietdien-network
   nginx:

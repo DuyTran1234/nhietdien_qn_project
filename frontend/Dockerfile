@@ -3,6 +3,4 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
-
-CMD ["sh", "-c", "mkdir -p /web_static && cp -r /app/dist/. /web_static/ && tail -f /dev/null"]
+RUN npm run dev
