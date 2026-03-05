@@ -27,7 +27,6 @@ services:
   nhietdien-frontend:
     build: ./frontend
     container_name: react_nhietdien
-    restart: always
     depends_on:
       - nhietdien-backend
     env_file:
