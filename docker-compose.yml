@@ -18,6 +18,8 @@ services:
     build: ./backend
     container_name: nestjs_nhietdien
     restart: always
+    ports:
+      - "3000:3000"
     depends_on:
       - psql_db
     env_file:
