@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from "@nestjs/common";
-import { HopDongThueDatService } from "../service/hop-dong-thue-dat.service";
+import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Query } from "@nestjs/common";
 import { CreateHopDongThueDatDto } from "../dto/create-hop-dong-thue-dat.dto";
-import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
-import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
 import { HopDongThueDatDtoResponse } from "../dto/response/hop-dong-thue-dat.dto.response";
+import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
+import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
+import { HopDongThueDatService } from "../service/hop-dong-thue-dat.service";
 
 @Controller('hop-dong-thue-dat')
 export class HopDongThueDatController {
@@ -18,14 +18,14 @@ export class HopDongThueDatController {
         return await this.hopDongService.createHopDongThueDat(createDto);
     }
 
-    @Get('get/:uuid')
+    @Post('get/:uuid')
     async getHopDongThueDat(
         @Param('uuid') uuid: string, @Body() sortDto: any,
     ): Promise<HopDongThueDatEntity[]> {
         return await this.hopDongService.getHopDongThueDat(uuid, sortDto);
     }
 
-    @Get('get-pagination')
+    @Post('get-pagination')
     async getPaginationHopDongThueDat(
         @Query('limit', ParseIntPipe) limit: number, @Query('page', ParseIntPipe) page: number,
         @Query('findHD') findHD: string, @Body() sortDto: any

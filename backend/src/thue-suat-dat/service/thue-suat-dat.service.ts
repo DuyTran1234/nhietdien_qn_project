@@ -30,8 +30,8 @@ export class ThueSuatDatService {
     ): Promise<{ list: ThueSuatDatEntity[], total: number }> {
         const [list, total] = await this.thueSuatDat.findAndCount({
             where: { isActive: true },
-            take: limit,
-            skip: page * limit,
+            take: limit > 0 ? limit : undefined,
+            skip: limit > 0 ? page * limit : undefined,
             order: {
                 id: 'desc',
             },

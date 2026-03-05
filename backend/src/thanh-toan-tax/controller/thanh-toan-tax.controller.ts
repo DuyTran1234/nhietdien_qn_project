@@ -26,6 +26,11 @@ export class ThanhToanTaxController {
         return await this.thanhToanTaxService.getThanhToanTaxByHopDongUUID(hopDongUUID, year, sortDto);
     }
 
+    @Get('get-by-id/:id')
+    async getThanhToanTaxById(@Param('id', ParseIntPipe) id: number) {
+        return await this.thanhToanTaxService.getThanhToanTaxById(id);
+    }
+
     @Patch('update')
     async updateThanhToanTax(@Body() dto: UpdateThanhToanTaxRequestDto): Promise<ThanhToanTaxEntity> {
         return await this.thanhToanTaxService.updateThanhToanTax(dto);

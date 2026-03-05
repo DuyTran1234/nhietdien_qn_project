@@ -4,6 +4,7 @@ import { ThanhToanHopDongEntity } from "../entity/thanh-toan-hop-dong.entity";
 import { Between, DeleteResult, Repository } from "typeorm";
 import { CreateThanhToanHopDongDto } from "../dto/create-thanh-toan-hop-dong.dto";
 import { UpdateThanhToanHopDongDTO } from "../dto/update-thanh-toan-hop-dong.dto";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class ThanhToanHopDongService {
@@ -14,6 +15,14 @@ export class ThanhToanHopDongService {
     async createThanhToanHopDong(createDto: CreateThanhToanHopDongDto): Promise<ThanhToanHopDongEntity> {
         const thanhToan = this.thanhToanRepo.create(createDto);
         return await this.thanhToanRepo.save(thanhToan);
+    }
+
+    async getThanhToanHopDongById(id: number): Promise<ThanhToanHopDongEntity> {
+        const thanhToan = await this.thanhToanRepo.findOneBy({ id: id });
+        if (!thanhToan) {
+            throw new NotFoundException('cannot find thanh toan hop dong');
+        }
+        return thanhToan;
     }
 
     async getThanhToanHopDongByHopDongUUID(
@@ -45,5 +54,10 @@ export class ThanhToanHopDongService {
             throw new NotFoundException('cannot found thanh toan hop dong for delete');
         }
         return remove;
+    }
+
+    @Transactional()
+    async deleteThanhToanHopDongByUUID(uuid: string): Promise<DeleteResult> {
+        return await this.thanhToanRepo.delete({ hopDongUUID: uuid });
     }
 }

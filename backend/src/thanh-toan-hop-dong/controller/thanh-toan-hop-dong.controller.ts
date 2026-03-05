@@ -25,6 +25,11 @@ export class ThanhToanHopDongController {
         return await this.thanhToanService.getThanhToanHopDongByHopDongUUID(hopDongUUID, year, sortDto);
     }
 
+    @Get('get-by-id/:id')
+    async getThanhToanHopDongById(@Param('id', ParseIntPipe) id: number) {
+        return await this.thanhToanService.getThanhToanHopDongById(id);
+    }
+
     @Patch('update')
     async updateThanhToanHopDong(
         @Body() updateDto: UpdateThanhToanHopDongDTO,

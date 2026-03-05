@@ -38,7 +38,7 @@ export class CoDongController {
         return await this.coDongService.getCoDongById(id);
     }
 
-    @Get('get-pagination-co-dong')
+    @Post('get-pagination-co-dong')
     async getPaginationCoDong(
         @Body() sortDto: any,
         @Query('limit', new ParseIntPipe({ optional: true })) limit: number,

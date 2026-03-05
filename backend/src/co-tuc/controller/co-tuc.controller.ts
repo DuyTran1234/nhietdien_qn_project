@@ -33,7 +33,7 @@ export class CoTucController {
         return await this.coTucService.createCoTuc(createDto);
     }
 
-    @Get('get-pagination-co-tuc')
+    @Post('get-pagination-co-tuc')
     async getPaginationCoTuc(
         @Query('namChot', ParseIntPipe) namChot: number, @Body() sortDto: any,
         @Query('limit', new ParseIntPipe({ optional: true })) limit: number,

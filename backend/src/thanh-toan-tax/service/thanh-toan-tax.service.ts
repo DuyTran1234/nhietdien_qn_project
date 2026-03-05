@@ -4,6 +4,7 @@ import { ThanhToanTaxEntity } from "../entity/thanh-toan-tax.entity";
 import { Between, DeleteResult, Repository } from "typeorm";
 import { CreateThanhToanTaxRequestDto } from "../dto/request/create-thanh-toan-tax.request.dto";
 import { UpdateThanhToanTaxRequestDto } from "../dto/request/update-thanh-toan-tax.request.dto";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class ThanhToanTaxService {
@@ -14,6 +15,14 @@ export class ThanhToanTaxService {
     async createThanhToanTax(createDto: CreateThanhToanTaxRequestDto): Promise<ThanhToanTaxEntity> {
         const thanhToan = this.thanhToanTaxRepo.create(createDto);
         return await this.thanhToanTaxRepo.save(thanhToan);
+    }
+
+    async getThanhToanTaxById(id: number) {
+        const thanhToan = await this.thanhToanTaxRepo.findOneBy({ id: id });
+        if (!thanhToan) {
+            throw new NotFoundException('cannot find thanh toan tax');
+        }
+        return thanhToan;
     }
 
     async getThanhToanTaxByHopDongUUID(
@@ -46,5 +55,10 @@ export class ThanhToanTaxService {
             throw new NotFoundException('cannot found thanh toan hop dong for delete');
         }
         return remove;
+    }
+
+    @Transactional()
+    async deleteThanhToanTaxByUUID(uuid: string): Promise<DeleteResult> {
+        return await this.thanhToanTaxRepo.delete({ hopDongUUID: uuid });
     }
 }

@@ -4,11 +4,14 @@ import { CoTucEntity } from "../entity/co-tuc.entity";
 import { Repository } from "typeorm";
 import { CreateCoTucRequestDto } from "../dto/request/create-co-tuc.request.dto";
 import { UpdateCoTucRequestDto } from "../dto/request/update-co-tuc.request.dto";
+import { ChiTietCoTucEntity } from "../entity/chi-tiet-co-tuc.entity";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class CoTucService {
     constructor(
         @InjectRepository(CoTucEntity) private coTucRepo: Repository<CoTucEntity>,
+        @InjectRepository(ChiTietCoTucEntity) private chiTietCoTucRepo: Repository<ChiTietCoTucEntity>
     ) { }
 
     async createCoTuc(createDto: CreateCoTucRequestDto): Promise<CoTucEntity> {
@@ -24,10 +27,21 @@ export class CoTucService {
         return coTuc;
     }
 
+    @Transactional()
     async updateCoTuc(updateDto: UpdateCoTucRequestDto): Promise<CoTucEntity> {
         const coTuc = await this.coTucRepo.findOneBy({ id: updateDto.id });
         if (!coTuc) {
             throw new BadRequestException('cannot find co tuc for update');
+        }
+        if (updateDto.soDKSH != coTuc.soDKSH) {
+            const listChiTietCoTuc = await this.chiTietCoTucRepo.findBy({
+                soDKSH: coTuc.soDKSH,
+            });
+            for (const chiTiet of listChiTietCoTuc) {
+                chiTiet.soDKSH = updateDto.soDKSH;
+                chiTiet.soDkshNamChot = `${updateDto.soDKSH}-${chiTiet.namChot}`;
+            }
+            await this.chiTietCoTucRepo.save(listChiTietCoTuc);
         }
         Object.assign(coTuc, updateDto);
         return await this.coTucRepo.save(coTuc);

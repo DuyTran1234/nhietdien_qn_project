@@ -9,6 +9,8 @@ import { UpdateHopDongThueDatDto } from "../dto/update-hop-dong-thue-dat.dto";
 import { HopDongThueDatEntity } from "../entity/hop-dong-thue-dat.entity";
 import { KyThanhToanService } from "./ky-thanh-toan.service";
 import { NopTienTaxService } from "./nop-tien-tax.service";
+import { ThanhToanHopDongService } from "src/thanh-toan-hop-dong/service/thanh-toan-hop-dong.service";
+import { ThanhToanTaxService } from "src/thanh-toan-tax/service/thanh-toan-tax.service";
 
 @Injectable()
 export class HopDongThueDatService {
@@ -16,6 +18,8 @@ export class HopDongThueDatService {
         @InjectRepository(HopDongThueDatEntity) private hopDongThueDat: Repository<HopDongThueDatEntity>,
         private kyThanhToanService: KyThanhToanService,
         private nopTienTaxService: NopTienTaxService,
+        private thanhToanHopDongService: ThanhToanHopDongService,
+        private thanhToanTaxService: ThanhToanTaxService,
     ) { }
 
     @Transactional()
@@ -135,7 +139,7 @@ export class HopDongThueDatService {
         const removeHD = await this.hopDongThueDat.remove(hopdong);
         const listHopDong = await this.hopDongThueDat.find({
             where: {
-                hopDongUUID: hopdong.hopDongUUID,
+                hopDongUUID: removeHD.hopDongUUID,
             },
             order: {
                 apDungDonGiaDate: 'desc',
@@ -147,6 +151,9 @@ export class HopDongThueDatService {
                 isActive: true,
                 isNewest: true,
             });
+        } else {
+            await this.thanhToanHopDongService.deleteThanhToanHopDongByUUID(removeHD.hopDongUUID);
+            await this.thanhToanTaxService.deleteThanhToanTaxByUUID(removeHD.hopDongUUID);
         }
         return removeHD;
     }
@@ -159,6 +166,8 @@ export class HopDongThueDatService {
         if (rs.affected == 0) {
             throw new BadRequestException('cannot find hopdongUUID for delete');
         }
+        await this.thanhToanHopDongService.deleteThanhToanHopDongByUUID(hopDongUUID);
+        await this.thanhToanTaxService.deleteThanhToanTaxByUUID(hopDongUUID);
         return rs;
     }
 
