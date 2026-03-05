@@ -34,7 +34,7 @@ services:
       - .env
     volumes:
       # Cắm một đầu vào tận hang ổ /app/dist
-      - frontend_data:/app/dist
+      - frontend_data:/web_static
     networks:
       - nhietdien-network
   nginx:
